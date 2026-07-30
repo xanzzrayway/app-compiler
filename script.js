@@ -390,11 +390,12 @@ $('compileBtn').onclick = async () => {
 
     if(!dispatchRes.ok){
       let errMsg = 'HTTP ' + dispatchRes.status;
+      const rawText = await dispatchRes.text();
       try {
-        const errData = await dispatchRes.json();
+        const errData = JSON.parse(rawText);
         if(errData.error) errMsg = errData.error;
       } catch(e) {
-        errMsg = await dispatchRes.text();
+        if(rawText) errMsg = rawText;
       }
       log('Gagal trigger: ' + errMsg, 'err');
       setCompileProgress(100, 'Gagal');
@@ -487,4 +488,72 @@ $('compileBtn').onclick = async () => {
 
   $('compileBtn').disabled = false;
   renderLimitBar();
+};
+
+// ================= Admin Panel =================
+let adminPasswordCache = '';
+
+$('adminBtn').onclick = () => {
+  $('adminModal').classList.add('open');
+  $('adminGate').style.display = 'block';
+  $('adminPanel').style.display = 'none';
+  $('adminPasswordInput').value = '';
+  $('adminGateMsg').textContent = '';
+};
+$('adminModalCloseBtn').onclick = () => $('adminModal').classList.remove('open');
+$('adminModal').onclick = (e) => { if(e.target === $('adminModal')) $('adminModal').classList.remove('open'); };
+
+$('adminUnlockBtn').onclick = async () => {
+  const pw = $('adminPasswordInput').value;
+  if(!pw){ $('adminGateMsg').textContent = 'Isi dulu password-nya.'; return; }
+
+  // gak ada endpoint "verify doang", jadi kita tes lewat set-limit dengan angka dummy
+  // yang gak bakal ngubah apa-apa kalau limit-nya emang segitu - tapi lebih aman
+  // langsung tampilin panelnya, verifikasi asli terjadi begitu admin pencet aksi.
+  adminPasswordCache = pw;
+  $('adminGate').style.display = 'none';
+  $('adminPanel').style.display = 'block';
+  $('adminActionMsg').textContent = '';
+};
+
+$('adminSaveLimitBtn').onclick = async () => {
+  const limit = $('adminLimitInput').value.trim();
+  if(!limit){ $('adminActionMsg').textContent = 'Isi dulu angka limitnya.'; return; }
+  $('adminActionMsg').textContent = 'Menyimpan...';
+  try{
+    const res = await apiFetch('/admin-set-limit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: adminPasswordCache, limit })
+    });
+    const data = await res.json();
+    if(!res.ok){
+      $('adminActionMsg').textContent = data.error || 'Gagal simpan limit.';
+      if(res.status === 401){ $('adminGate').style.display = 'block'; $('adminPanel').style.display = 'none'; }
+      return;
+    }
+    $('adminActionMsg').textContent = 'Limit harian diubah jadi ' + data.newLimit + 'x.';
+  }catch(e){
+    $('adminActionMsg').textContent = 'Error: ' + e.message;
+  }
+};
+
+$('adminResetBtn').onclick = async () => {
+  $('adminActionMsg').textContent = 'Mereset...';
+  try{
+    const res = await apiFetch('/admin-reset-quota', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: adminPasswordCache })
+    });
+    const data = await res.json();
+    if(!res.ok){
+      $('adminActionMsg').textContent = data.error || 'Gagal reset kuota.';
+      if(res.status === 401){ $('adminGate').style.display = 'block'; $('adminPanel').style.display = 'none'; }
+      return;
+    }
+    $('adminActionMsg').textContent = 'Kuota direset (' + data.deleted + ' entri dihapus).';
+  }catch(e){
+    $('adminActionMsg').textContent = 'Error: ' + e.message;
+  }
 };
