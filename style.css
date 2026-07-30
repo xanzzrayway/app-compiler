@@ -39,6 +39,14 @@
   .htext h1{font-size:20px;margin:2px 0 2px;letter-spacing:0.3px;}
   .htext .sub{color:var(--dim);font-size:12px;}
 
+  .admin-btn{
+    width:36px;height:36px;border-radius:10px;flex-shrink:0;margin-left:auto;
+    background:#0c1424;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .admin-btn svg{width:17px;height:17px;stroke:var(--dim);}
+  .admin-btn:active{border-color:var(--accent);}
+
   .card{
     background:linear-gradient(180deg, var(--panel), var(--panel2));
     border:1px solid var(--line);
