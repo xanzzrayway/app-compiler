@@ -18,6 +18,9 @@
       <h1>APK Compiler</h1>
       <div class="sub">Ubah link web atau file HTML jadi APK Android.</div>
     </div>
+    <div class="admin-btn" id="adminBtn" title="Admin Panel">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/></svg>
+    </div>
   </header>
 
   <div class="card">
@@ -123,6 +126,39 @@
       </div>
     </div>
     <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="adminModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="ph">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/></svg>
+      </div>
+      <div class="modal-title">Admin Panel</div>
+      <div class="modal-close" id="adminModalCloseBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
+    </div>
+
+    <div id="adminGate">
+      <label>Password Admin</label>
+      <input type="password" id="adminPasswordInput" placeholder="Masukin password">
+      <button class="main" id="adminUnlockBtn" style="margin-top:12px;">Masuk</button>
+      <div class="hint" id="adminGateMsg"></div>
+    </div>
+
+    <div id="adminPanel" style="display:none;">
+      <label>Kuota Compile Harian (per-IP)</label>
+      <input type="text" inputmode="numeric" id="adminLimitInput" placeholder="misal: 3">
+      <button class="main" id="adminSaveLimitBtn" style="margin-top:10px;">Simpan Limit</button>
+
+      <label style="margin-top:20px;">Reset Kuota</label>
+      <div class="hint">Ngereset hitungan compile hari ini buat SEMUA IP pengguna, bukan cuma kamu.</div>
+      <button class="main" id="adminResetBtn" style="margin-top:10px;background:linear-gradient(90deg, var(--err), #b3324a);">Reset Kuota Semua IP</button>
+
+      <div class="hint" id="adminActionMsg" style="margin-top:12px;"></div>
+    </div>
   </div>
 </div>
 
