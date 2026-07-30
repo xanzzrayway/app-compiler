@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APK Compiler — Abid Studio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z"/><path d="M12 22V12"/><path d="M20 6.5L12 12 4 6.5"/></svg>
+    </div>
+    <div class="htext">
+      <div class="tag">Abid Studio</div>
+      <h1>APK Compiler</h1>
+      <div class="sub">Ubah link web atau file HTML jadi APK Android.</div>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>Detail App</h2>
+    <label>Nama App</label>
+    <input type="text" id="appName" placeholder="Aplikasi Gue">
+    <label>Package Name</label>
+    <input type="text" id="pkgName" placeholder="com.abidstudio.aplikasigue">
+    <label>Versi App</label>
+    <input type="text" id="appVersion" placeholder="1.0">
+
+    <label>Icon App (opsional)</label>
+    <div class="icon-row">
+      <div class="icon-preview" id="iconPreview">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </div>
+      <div class="filebtn" id="iconBtnLabel">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+        Upload icon
+      </div>
+      <input type="file" id="iconFile" accept="image/*" style="display:none;">
+    </div>
+    <div class="hint"></div>
+
+    <label style="margin-top:16px;">Sumber Konten</label>
+    <div class="tabs">
+      <div class="tab active" data-mode="url">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07l-1.5 1.5"/><path d="M14 11a5 5 0 00-7.07 0L4.1 13.83a5 5 0 007.07 7.07l1.5-1.5"/></svg>
+        Link Web
+      </div>
+      <div class="tab" data-mode="html">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+        File HTML
+      </div>
+    </div>
+
+    <div class="mode-panel active" id="panel-url">
+      <label>URL</label>
+      <input type="text" id="urlInput" placeholder="Contoh https://example.com">
+    </div>
+
+    <div class="mode-panel" id="panel-html">
+      <label>Tempel kode HTML, atau upload file</label>
+      <textarea id="htmlInput" placeholder="<!DOCTYPE html>..."></textarea>
+      <div class="filebtn" id="fileBtnLabel" style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+        Upload file .html
+      </div>
+      <input type="file" id="htmlFile" accept=".html,.htm" style="display:none;">
+    </div>
+
+    <button class="main" id="compileBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Compile ke APK
+    </button>
+  </div>
+
+  <div class="card">
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Izin Aplikasi</h2>
+    <label></label>
+    <div class="perm-search">
+      <input type="text" id="permSearch" placeholder="Cari izin...">
+    </div>
+    <div class="perm-list" id="permList"></div>
+    <div class="perm-selected" id="permSelected"></div>
+    <div class="hint"></div>
+  </div>
+
+  <div class="card" id="logCard" style="display:none;">
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Progres</h2>
+    <div class="progress-wrap">
+      <div class="progress-label"><span id="progressStage">Menunggu...</span><span id="progressPercent">0%</span></div>
+      <div class="bar-track"><div class="bar-fill" id="compileBarFill"></div></div>
+    </div>
+    <div class="log" id="logBox"></div>
+    <div class="dl" id="dlBox">
+      <a id="dlLink" href="#" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 12l5 5 5-5"/><path d="M5 21h14"/></svg>
+        Download APK
+      </a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>Riwayat Compile</h2>
+    <div class="limit-bar-wrap">
+      <div class="limit-bar-label"><span>Limit Harian</span><span id="limitCountLabel">0/5</span></div>
+      <div class="bar-track"><div class="bar-fill" id="limitBarFill"></div></div>
+    </div>
+    <div id="historyList"><div class="h-empty">Belum ada riwayat compile.</div></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="infoModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="ph" id="modalIconWrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </div>
+      <div class="modal-title" id="modalAppName">-</div>
+      <div class="modal-close" id="modalCloseBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
