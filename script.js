@@ -122,7 +122,7 @@ renderPermList();
 renderPermSelected();
 
 // ====== Batas compile harian ======
-const DAILY_LIMIT = 5;
+const DAILY_LIMIT = 3;
 function getTodayKey(){ return new Date().toISOString().slice(0,10); }
 function getLimitData(){
   let data;
@@ -371,7 +371,6 @@ $('compileBtn').onclick = async () => {
   function finishHistory(status, extra={}){
     if(historySaved) return;
     historySaved = true;
-    incCompileCountToday();
     saveHistoryEntry({
       appName, pkgName, version, mode, date: dateLabel, status,
       iconThumb: iconBase64 ? ('data:image/png;base64,' + iconBase64) : null,
@@ -406,6 +405,7 @@ $('compileBtn').onclick = async () => {
 
     setCompileProgress(15, 'Nunggu workflow mulai...');
     log('Build dipicu. Nunggu workflow mulai jalan...', 'ok');
+    incCompileCountToday(); // server udah makan kuota di titik ini, samain di client
 
     let runId = null;
     for(let i=0; i<15 && !runId; i++){
